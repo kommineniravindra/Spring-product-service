@@ -1,14 +1,12 @@
-# Use an official JDK base image
-FROM openjdk:17-jdk-alpine
+FROM eclipse-temurin:17-jdk
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy the built JAR file from host into the container
-COPY target/*.jar app.jar
+COPY . .
 
-# Expose port (Render sets PORT env automatically)
+RUN chmod +x mvnw
+RUN ./mvnw clean install -DskipTests
+
 EXPOSE 8082
 
-# Run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
+CMD ["java", "-jar", "target/product-service-0.0.1-SNAPSHOT.jar"]
