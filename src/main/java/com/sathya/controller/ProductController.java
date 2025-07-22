@@ -3,10 +3,7 @@ package com.sathya.controller;
 import com.sathya.entity.Product;
 import com.sathya.feign.AuthClient;
 import com.sathya.service.ProductService;
-
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,14 +12,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
-
 public class ProductController {
 
     private final ProductService productService;
     private final AuthClient authClient;
-   
 
-    // User access (open for both)
+    // 🟢 Public endpoints
     @GetMapping
     public ResponseEntity<List<Product>> getAllProducts() {
         return ResponseEntity.ok(productService.getAllProducts());
@@ -33,7 +28,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductsByCategory(category));
     }
 
-    // Admin access
+    // 🔐 Admin-only endpoints
     @PostMapping
     public ResponseEntity<?> createProduct(@RequestBody Product product,
                                            @RequestHeader("Authorization") String token) {
@@ -56,17 +51,18 @@ public class ProductController {
         productService.deleteProduct(id);
         return ResponseEntity.ok("Deleted successfully");
     }
-//    @GetMapping("/{id}/image")
-//    public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
-//        return productService.getProductImage(id);
-//    }
 
-    // Helpers
+    // 🔧 Helper methods
     private boolean isAdmin(String token) {
         try {
+            // Clean token: remove "Bearer " if it exists
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
             String role = authClient.validateToken(token);
             return role.equalsIgnoreCase("ADMIN");
         } catch (Exception e) {
+            System.out.println("Token validation failed: " + e.getMessage());
             return false;
         }
     }
