@@ -41,12 +41,5 @@ public class ProductService {
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
     }
-//    public ResponseEntity<byte[]> getProductImage(Long productId) {
-//        Product product = productRepository.findById(productId)
-//                .orElseThrow(() -> new RuntimeException("Product not found"));
-//
-//        return ResponseEntity.ok()
-//                .contentType(MediaType.parseMediaType(product.getImageType()))
-//                .body(product.getImage());
-//    }
+
 }
